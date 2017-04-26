@@ -38,3 +38,7 @@ DEPENDPATH += F:/library/glm-0.9.7.5/glm \
             F:/library/glew-2.0.0/glew-2.0.0/include \
             F:/library/freeglut-3.0.0/freeglut-3.0.0/build_mingw/bin \
             F:/library/glew-2.0.0/glew-2.0.0/build/cmake/mingw_build/bin
+
+DISTFILES += \
+    basictransformvshader.vert \
+    basictransformfshader.frag

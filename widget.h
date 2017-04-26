@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QPoint>
+#include <QDir>
 
 #include <iostream>
 

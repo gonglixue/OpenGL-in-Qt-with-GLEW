@@ -7,6 +7,9 @@ Widget::Widget(QWidget *parent)
     screenHeight = 500;
     screenWidth = 500;
     xRotAngle = yRotAngle = zRotAngle = 0;
+    vShaderFile = QDir::currentPath() + "/basictransformvshader.vert";
+    fShaderFile = QDir::currentPath() + "/basictransformfshader.frag";
+
 }
 
 Widget::~Widget()
@@ -71,23 +74,6 @@ static const GLfloat g_vertex_buffer_data[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-
-static QString vertex_shader =
-        "#version 400 core\r\n"
-        "layout(location = 0) in vec3 position;"
-        "uniform mat4 model;"
-        "uniform mat4 view;"
-        "uniform mat4 projection;"
-        "void main(){"
-        "gl_Position = projection * view * model * vec4(position, 1);"
-        "}";
-
-static QString fragment_shader =
-        "#version 400 core\r\n"
-        "out vec3 color;"
-        "void main(){"
-        "color = vec3(1,0,0);"
-        "}";
 
 void Widget::setXRotation(int angle)
 {
@@ -178,10 +164,10 @@ void Widget::initializeGL()
     );
     glEnableVertexAttribArray(0);
 
-    if (!program.addShaderFromSourceCode(QOpenGLShader::Vertex, vertex_shader))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
         std::cerr <<"unable to compile vertx shader\n";
 
-    if (!program.addShaderFromSourceCode(QOpenGLShader::Fragment, fragment_shader))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, fShaderFile))
         std::cerr <<"unable to compile fragmet shader\n";
 
     if (!program.link())
