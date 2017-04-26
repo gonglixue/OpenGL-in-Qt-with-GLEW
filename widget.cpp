@@ -76,9 +76,6 @@ static QString fragment_shader =
         "color = vec3(1,0,0);"
         "}";
 
-GLuint vertexbuffer;
-GLuint VertexArrayID;
-
 void Widget::initializeGL()
 {
     makeCurrent();
@@ -98,11 +95,11 @@ void Widget::initializeGL()
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
     glVertexAttribPointer(
@@ -142,10 +139,20 @@ QSize Widget::sizeHint() const
 
 void Widget::keyPressEvent(QKeyEvent *event)
 {
+    qDebug() << event->key();
     if(event->key() == 87)
     {
         camera.ProcessKeyboard(FORWARD, 0.01);
     }
+
+    switch(event->key())
+    {
+    case 87: camera.ProcessKeyboard(FORWARD, 0.01); break;
+    case 83: camera.ProcessKeyboard(BACKWARD, 0.01); break;
+    case 65: camera.ProcessKeyboard(LEFT, 0.01); break;
+    case 68: camera.ProcessKeyboard(RIGHT, 0.01); break;
+    }
+
     update();
 }
 
@@ -157,7 +164,7 @@ void Widget::paintGL()
 
     glUseProgram(program.programId());
 
-    glBindVertexArray(VertexArrayID);
+    glBindVertexArray(VAO);
     glm::mat4 model;
     model = glm::translate(model, glm::vec3(0.1f,0,0));
     GLuint modelLoc = glGetUniformLocation(program.programId(),"model" );
@@ -172,7 +179,7 @@ void Widget::paintGL()
     glUniformMatrix4fv(projLoc,1,GL_FALSE,glm::value_ptr(projection));
     // Draw the triangle !
     glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    //glDisableVertexAttribArray(0);
+
     glBindVertexArray(0);
 
 }

@@ -24,6 +24,8 @@ public:
     Widget(QWidget *parent = 0);
     ~Widget();
     QSize sizeHint() const;
+    QString vShaderFile;
+    QString fShaderFile;
 
 protected:
     void initializeGL();
@@ -36,6 +38,9 @@ private:
     Camera camera;
     int screenWidth;
     int screenHeight;
+
+    GLuint VBO;
+    GLuint VAO;
 
 };
 
