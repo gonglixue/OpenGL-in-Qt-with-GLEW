@@ -3,6 +3,7 @@
 ProgramMainWindow::ProgramMainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QMenuBar *menuBar = new QMenuBar;
+
     QMenu *menuLoadVShader = menuBar->addMenu(tr("&Load"));
     QAction *actionVShader = new QAction(menuLoadVShader);
     actionVShader->setText(tr("vShader"));
