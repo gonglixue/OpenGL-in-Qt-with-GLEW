@@ -28,6 +28,7 @@ public:
     QSize sizeHint() const;
     QString vShaderFile;
     QString fShaderFile;
+    Camera camera;
 
 public slots:
     void setXRotation(int angle);
@@ -50,7 +51,7 @@ protected:
 
 private:
     QOpenGLShaderProgram program;
-    Camera camera;
+
     int screenWidth;
     int screenHeight;
 

@@ -49,3 +49,17 @@ QSlider *MyWindow::createSlider()
 
     return slider;
 }
+
+void MyWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug() << "window" << event->key();
+    switch(event->key())
+    {
+    case 87: glWidget->camera.ProcessKeyboard(FORWARD, 0.01); break;
+    case 83: glWidget->camera.ProcessKeyboard(BACKWARD, 0.01); break;
+    case 65: glWidget->camera.ProcessKeyboard(LEFT, 0.01); break;
+    case 68: glWidget->camera.ProcessKeyboard(RIGHT, 0.01); break;
+    }
+
+    update();
+}

@@ -192,10 +192,6 @@ QSize Widget::sizeHint() const
 void Widget::keyPressEvent(QKeyEvent *event)
 {
     qDebug() << event->key();
-    if(event->key() == 87)
-    {
-        camera.ProcessKeyboard(FORWARD, 0.01);
-    }
 
     switch(event->key())
     {
