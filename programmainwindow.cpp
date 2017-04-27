@@ -18,5 +18,6 @@ ProgramMainWindow::ProgramMainWindow(QWidget *parent) : QMainWindow(parent)
 void ProgramMainWindow::LoadVertexShader()
 {
     qDebug() << "load vertex shader";
+    // TODO 更改shader
 }
 
