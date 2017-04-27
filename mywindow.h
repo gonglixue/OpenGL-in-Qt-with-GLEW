@@ -4,7 +4,6 @@
 #include "widget.h"
 #include <QWidget>
 
-
 class QSlider;
 class QPushButton;
 

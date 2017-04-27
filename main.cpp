@@ -1,5 +1,5 @@
 //#include "widget.h"
-#include "mywindow.h"
+#include "programmainwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     format.setStencilBufferSize(8);
     QSurfaceFormat::setDefaultFormat(format);
 
-    MyWindow w;
+    ProgramMainWindow w;
     w.show();
 
     return a.exec();
