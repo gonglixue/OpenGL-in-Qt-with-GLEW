@@ -45,4 +45,6 @@ DEPENDPATH += F:/library/glm-0.9.7.5/glm \
 
 DISTFILES += \
     basictransformvshader.vert \
-    basictransformfshader.frag
+    basictransformfshader.frag \
+    basiclambert.vert \
+    basiclambert.frag

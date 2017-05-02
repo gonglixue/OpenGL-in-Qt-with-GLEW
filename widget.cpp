@@ -7,9 +7,13 @@ Widget::Widget(QWidget *parent)
     screenHeight = 500;
     screenWidth = 500;
     xRotAngle = yRotAngle = zRotAngle = 0;
-    vShaderFile = QDir::currentPath() + "/basictransformvshader.vert";
-    fShaderFile = QDir::currentPath() + "/basictransformfshader.frag";
+    vShaderFile = QDir::currentPath() + "/basiclambert.vert";
+    fShaderFile = QDir::currentPath() + "/basiclambert.frag";
+    lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
+    objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
+    lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
+    shaderType = 1;
 }
 
 Widget::~Widget()
@@ -74,6 +78,49 @@ static const GLfloat g_vertex_buffer_data[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
+static const GLfloat g_vertex_buffer_data_normal[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
 
 void Widget::setXRotation(int angle)
 {
@@ -144,6 +191,7 @@ void Widget::initializeGL()
 
     std::cerr << "using OpenGL " << format().majorVersion() << "." << format().minorVersion() << "\n";
 
+    glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 
@@ -152,17 +200,15 @@ void Widget::initializeGL()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(
-       0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-       3,                  // size
-       GL_FLOAT,           // type
-       GL_FALSE,           // normalized?
-       5*sizeof(GLfloat),                  // stride
-       (void*)0            // array buffer offset
-    );
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data_normal), g_vertex_buffer_data_normal, GL_STATIC_DRAW);
+    // position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
 
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
         std::cerr <<"unable to compile vertx shader\n";
@@ -213,24 +259,57 @@ void Widget::paintGL()
     glUseProgram(program.programId());
 
     glBindVertexArray(VAO);
-    glm::mat4 model;
-    model = glm::translate(model, glm::vec3(0.1f,0,0));
-    model = glm::rotate(model, glm::radians((GLfloat)xRotAngle), glm::vec3(1, 0, 0));
-    model = glm::rotate(model, glm::radians((GLfloat)yRotAngle), glm::vec3(0, 1, 0));
-    model = glm::rotate(model, glm::radians((GLfloat)zRotAngle), glm::vec3(0, 0, 1));
-    GLuint modelLoc = glGetUniformLocation(program.programId(),"model" );
-    glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
 
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+    if(shaderType == 0)
+    {
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(0.1f,0,0));
+        model = glm::rotate(model, glm::radians((GLfloat)xRotAngle), glm::vec3(1, 0, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)yRotAngle), glm::vec3(0, 1, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)zRotAngle), glm::vec3(0, 0, 1));
+        GLuint modelLoc = glGetUniformLocation(program.programId(),"model" );
+        glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
 
-    GLuint viewLoc = glGetUniformLocation(program.programId(),"view" );
-    GLuint projLoc = glGetUniformLocation(program.programId(),"projection" );
-    glUniformMatrix4fv(viewLoc,1,GL_FALSE,glm::value_ptr(view));
-    glUniformMatrix4fv(projLoc,1,GL_FALSE,glm::value_ptr(projection));
-    // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
 
+        GLuint viewLoc = glGetUniformLocation(program.programId(),"view" );
+        GLuint projLoc = glGetUniformLocation(program.programId(),"projection" );
+        glUniformMatrix4fv(viewLoc,1,GL_FALSE,glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc,1,GL_FALSE,glm::value_ptr(projection));
+        // Draw the triangle !
+        glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+    }
+
+    else if(shaderType == 1)
+    {
+        GLuint objectColorLoc = glGetUniformLocation(program.programId(), "objectColor");
+        GLuint lightColorLoc = glGetUniformLocation(program.programId(), "lightColor");
+        GLuint lightPosLoc = glGetUniformLocation(program.programId(), "lightPos");
+        GLuint viewPosLoc = glGetUniformLocation(program.programId(), "viewPos");
+
+        glUniform3f(objectColorLoc, objectColor.x, objectColor.y, objectColor.z);
+        glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
+
+        glm::mat4 model;
+        model = glm::rotate(model, glm::radians((GLfloat)xRotAngle), glm::vec3(1, 0, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)yRotAngle), glm::vec3(0, 1, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)zRotAngle), glm::vec3(0, 0, 1));
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+
+        GLuint modelLoc = glGetUniformLocation(program.programId(), "model");
+        GLuint viewLoc = glGetUniformLocation(program.programId(), "view");
+        GLuint projLoc = glGetUniformLocation(program.programId(), "projection");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+         glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
     glBindVertexArray(0);
 
 }

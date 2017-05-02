@@ -60,7 +60,9 @@ OBJECTS       = debug/main.o \
 		debug/moc_programmainwindow.o
 
 DIST          = basictransformvshader.vert \
-		basictransformfshader.frag widget.h \
+		basictransformfshader.frag \
+		basiclambert.vert \
+		basiclambert.frag widget.h \
 		camera.h \
 		mywindow.h \
 		programmainwindow.h main.cpp \

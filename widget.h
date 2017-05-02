@@ -30,6 +30,7 @@ public:
     QString fShaderFile;
     Camera camera;
 
+
 public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
@@ -56,14 +57,17 @@ private:
     int screenHeight;
 
     GLuint VBO;
-    GLuint VAO;
+    GLuint VAO;   
 
     int xRotAngle;
     int yRotAngle;
     int zRotAngle;
     QPoint mouseLastPos;
 
-
+    int shaderType; //0:only color; 1:light;
+    glm::vec3 objectColor;
+    glm::vec3 lightColor;
+    glm::vec3 lightPos;
 };
 
 #endif // WIDGET_H
