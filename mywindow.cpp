@@ -13,10 +13,14 @@ MyWindow::MyWindow()
     xSlider = createSlider();
     ySlider = createSlider();
     zSlider = createSlider();
+    lightXSlider = new QSlider(Qt::Vertical);
+    lightXSlider->setRange(-30, 30);
+
 
     connect(xSlider, &QSlider::valueChanged, glWidget, &Widget::setXRotation);
     connect(ySlider, &QSlider::valueChanged, glWidget, &Widget::setYRotation);
     connect(zSlider, &QSlider::valueChanged, glWidget, &Widget::setZRotation);
+    connect(lightXSlider, &QSlider::valueChanged, glWidget, &Widget::setLightX);
 
     connect(glWidget, &Widget::xRotationChanged, xSlider, &QSlider::setValue);
     connect(glWidget, &Widget::yRotationChanged, ySlider, &QSlider::setValue);
@@ -28,12 +32,14 @@ MyWindow::MyWindow()
     container->addWidget(xSlider);
     container->addWidget(ySlider);
     container->addWidget(zSlider);
+    container->addWidget(lightXSlider);
 
     setLayout(container);
 
     xSlider->setValue(15 * 16);
     ySlider->setValue(345 * 16);
     zSlider->setValue(0 * 16);
+    lightXSlider->setValue(0);
 
     setWindowTitle(tr("GLEW Rendering"));
 }
@@ -49,6 +55,7 @@ QSlider *MyWindow::createSlider()
 
     return slider;
 }
+
 
 void MyWindow::keyPressEvent(QKeyEvent *event)
 {

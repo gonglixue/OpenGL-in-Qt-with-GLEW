@@ -26,6 +26,128 @@ void Widget::cleanup()
 
 }
 
+void Widget::LoadOBJ()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Open An Obj File"),
+                QString(),
+                tr("OBJ Files(*.obj)")
+                );
+    if(!fileName.isEmpty()){
+        QFile file(fileName);
+        if(!file.open(QIODevice::ReadOnly)){
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("could not open this obj file"));
+            return;
+        }
+        else{
+            QTextStream in (&file);
+
+            vector<glm::vec3> vertices_coords;
+            vector<glm::vec3> vertices_normal;
+            vector<glm::vec2> vertices_texcoords;
+            vector<Vertex> vertices;
+
+            int ftest = 0;
+            QString line = in.readLine();
+            while(true)
+            {
+                if(line.isEmpty())
+                {
+                    qDebug() << "space"   ;
+                    line = in.readLine();
+                    continue;
+
+                }
+
+                if(line[0] == '#')
+                {
+                    qDebug() << line;
+                }
+                else if(line.left(2) == "v ")  //顶点坐标
+                {
+                    line.remove(0, 1);  // remove "# "
+                    QStringList vertex_coords = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_coords[0].toFloat();
+                    GLfloat y = vertex_coords[1].toFloat();
+                    GLfloat z = vertex_coords[2].toFloat();
+
+                    //qDebug() << "v " << x << " " << y << " " << z;
+                    vertices_coords.push_back(glm::vec3(x, y, z));
+                }
+                else if(line.left(2) == "vn")
+                {
+                    line.remove(0, 2);  //remove "vn "
+                    QStringList vertex_normal = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_normal[0].toFloat();
+                    GLfloat y = vertex_normal[1].toFloat();
+                    GLfloat z = vertex_normal[2].toFloat();
+
+                    //qDebug() << "vn " << x << " " << y << " " << z;
+                    vertices_normal.push_back(glm::vec3(x, y, z));
+                }
+                else if(line.left(2) == "vt")
+                {
+                    line.remove(0,2);
+                    QStringList vertex_texcoords = line.split(' ',QString::SkipEmptyParts);
+                    GLfloat x = vertex_texcoords[0].toFloat();
+                    GLfloat y = vertex_texcoords[1].toFloat();
+
+                    //qDebug() << "vt " << x << " " << y;
+                    vertices_texcoords.push_back(glm::vec2(x,y));
+                }
+                else if(line.left(2) == "f ")
+                {
+                    line.remove(0, 1);  // remove "f "
+                    QStringList face_index = line.split(' ',QString::SkipEmptyParts);
+                    int v_testIndex[3];
+                    int n_testIndex[3];
+
+                    for(int i=0; i<3; i++)
+                    {
+                        QString aVert = face_index[i];
+                        QStringList  aVert_index = aVert.split('/');
+                        int v_index = aVert_index[0].toInt();
+                        //int t_index = aVert_index[1].toInt();
+                        int n_index = aVert_index[2].toInt();
+
+                        v_testIndex[i] = v_index;
+                        n_testIndex[i] = n_index;
+
+                        Vertex vert;
+                        vert.Position = vertices_coords[v_index-1];
+                        vert.Normal = vertices_normal[n_index-1];
+                        //vert.TexCoords =
+
+                        vertices.push_back(vert);
+                    }
+
+//                    qDebug() << v_testIndex[0] <<"/"<<n_testIndex[0] << " "
+//                                              << v_testIndex[1] << "/" << n_testIndex[1] << " "
+//                                              << v_testIndex[2] << "/" << n_testIndex[2];
+
+                    ftest++;
+                }
+                if(in.atEnd())
+                    break;
+
+                line = in.readLine();
+//                if(line==NULL)
+//                {
+//                    qDebug() << "null";
+//                    break;
+//                }
+            }
+
+            file.close();
+            mesh = Mesh(vertices);
+
+        }
+    }
+}
+
 static void qNormalizeAngle(int &angle)
 {
     while(angle < 0)
@@ -155,6 +277,24 @@ void Widget::setZRotation(int angle)
     }
 }
 
+void Widget::setLightX(GLfloat light_x)
+{
+    lightPos.x = light_x/10.0;
+    update();
+}
+
+void Widget::setLightY(GLfloat light_y)
+{
+    lightPos.y = light_y/10.0;
+    update();
+}
+
+void Widget::setLightZ(GLfloat light_z)
+{
+    lightPos.z = light_z/10.0;
+    update();
+}
+
 void Widget::mousePressEvent(QMouseEvent *event)
 {
     mouseLastPos = event->pos();
@@ -177,6 +317,7 @@ void Widget::mouseMoveEvent(QMouseEvent *event)
 
 void Widget::initializeGL()
 {
+
     makeCurrent();
 
     // To properly initialize all available OpenGL function pointers
@@ -192,9 +333,11 @@ void Widget::initializeGL()
     std::cerr << "using OpenGL " << format().majorVersion() << "." << format().minorVersion() << "\n";
 
     glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-
+    LoadOBJ();
+/*
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -208,7 +351,7 @@ void Widget::initializeGL()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
-
+*/
 
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
         std::cerr <<"unable to compile vertx shader\n";
@@ -258,7 +401,8 @@ void Widget::paintGL()
 
     glUseProgram(program.programId());
 
-    glBindVertexArray(VAO);
+    //glBindVertexArray(VAO);
+    glBindVertexArray(mesh.VAO);
 
     if(shaderType == 0)
     {
@@ -308,7 +452,7 @@ void Widget::paintGL()
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-         glDrawArrays(GL_TRIANGLES, 0, 36);
+         glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
     }
     glBindVertexArray(0);
 

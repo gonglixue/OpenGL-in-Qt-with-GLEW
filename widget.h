@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "camera.h"
+#include "mesh.h"
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLShaderProgram>
@@ -15,8 +16,15 @@
 #include <QElapsedTimer>
 #include <QPoint>
 #include <QDir>
-
+#include <QFileDialog>
+#include <QFile>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QString>
+#include <QStringList>
 #include <iostream>
+
+using namespace std;
 
 class Widget : public QOpenGLWidget
 {
@@ -25,6 +33,7 @@ class Widget : public QOpenGLWidget
 public:
     Widget(QWidget *parent = 0);
     ~Widget();
+    void LoadOBJ();
     QSize sizeHint() const;
     QString vShaderFile;
     QString fShaderFile;
@@ -35,12 +44,16 @@ public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
+    void setLightX(GLfloat light_x);
+    void setLightY(GLfloat light_y);
+    void setLightZ(GLfloat light_z);
     void cleanup();
 
 signals:
     void xRotationChanged(int angle);
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
+
 
 protected:
     void initializeGL();
@@ -68,6 +81,8 @@ private:
     glm::vec3 objectColor;
     glm::vec3 lightColor;
     glm::vec3 lightPos;
+
+    Mesh mesh;
 };
 
 #endif // WIDGET_H
