@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     camera.cpp \
     mywindow.cpp \
     programmainwindow.cpp \
-    mesh.cpp
+    mesh.cpp \
+    goochwindow.cpp
 
 HEADERS  += widget.h \
     camera.h \
     mywindow.h \
     programmainwindow.h \
-    mesh.h
+    mesh.h \
+    goochwindow.h
 
 //macx: LIBS += -L$$PWD/../../Homebrew/Cellar/glew/1.12.0/lib/ -lGLEW.1.12.0
 //LIBS += "F:/library/glew-2.0.0/glew-2.0.0/build/cmake/mingw_build/lib/libglew32.a"
@@ -49,6 +51,9 @@ DISTFILES += \
     basictransformvshader.vert \
     basictransformfshader.frag \
     basiclambert.vert \
-    basiclambert.frag
+    basiclambert.frag \
+    gooch.vert \
+    temp \
+    gooch.frag
 
 CONFIG+=  debug

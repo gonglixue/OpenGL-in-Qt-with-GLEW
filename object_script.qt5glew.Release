@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\widget.o
+./release\camera.o
+./release\mywindow.o
+./release\programmainwindow.o
+./release\mesh.o
+./release\goochwindow.o
+./release\moc_widget.o
+./release\moc_mywindow.o
+./release\moc_programmainwindow.o
+./release\moc_goochwindow.o
+);

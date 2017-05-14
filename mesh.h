@@ -31,8 +31,10 @@ public:
     Mesh(vector<Vertex> vertices_in, vector<GLuint>indices);
     Mesh(vector<Vertex> vertices_in);
     GLuint VAO, VBO, EBO;
-private:
 
+    void ReloadVertices(vector<Vertex> vertices_in);
+private:
+    void deleteBuffer();
     void setupMesh();
     void setupMeshWithoutElement();
 };

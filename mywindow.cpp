@@ -70,3 +70,8 @@ void MyWindow::keyPressEvent(QKeyEvent *event)
 
     update();
 }
+
+void MyWindow::LoadOBJ()
+{
+    glWidget->ReLoadOBJ();
+}

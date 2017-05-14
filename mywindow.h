@@ -13,12 +13,14 @@ class MyWindow : public QWidget
     Q_OBJECT
 public:
     MyWindow();
+    void LoadOBJ();
 protected:
     void keyPressEvent(QKeyEvent *event);
-
-private:
     QSlider* createSlider();
     Widget *glWidget;
+private:
+
+
     QSlider *xSlider;
     QSlider *ySlider;
     QSlider *zSlider;

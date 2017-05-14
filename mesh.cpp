@@ -22,6 +22,14 @@ Mesh::Mesh(vector<Vertex> vertices_in)
     qDebug() << "v_n:" <<vertices.size();
     this->setupMeshWithoutElement();
 }
+void Mesh::ReloadVertices(vector<Vertex> vertices_in)
+{
+    this->vertices.clear();
+    this->vertices = vertices_in;
+    qDebug() << "v_n:" << vertices.size();
+    deleteBuffer();
+    this->setupMeshWithoutElement();
+}
 
 void Mesh::setupMesh()
 {
@@ -69,4 +77,10 @@ void Mesh::setupMeshWithoutElement()
     //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
 
     glBindVertexArray(0); // unbind vao
+}
+
+void Mesh::deleteBuffer()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }

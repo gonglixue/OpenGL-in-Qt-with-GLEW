@@ -7,13 +7,26 @@ Widget::Widget(QWidget *parent)
     screenHeight = 500;
     screenWidth = 500;
     xRotAngle = yRotAngle = zRotAngle = 0;
-    vShaderFile = QDir::currentPath() + "/basiclambert.vert";
-    fShaderFile = QDir::currentPath() + "/basiclambert.frag";
+    shaderType = 2;
+
+    if(shaderType == 1)
+    {
+        vShaderFile = QDir::currentPath() + "/basiclambert.vert";
+        fShaderFile = QDir::currentPath() + "/basiclambert.frag";
+    }
+    else if(shaderType == 2)
+    {
+        vShaderFile = QDir::currentPath() + "/gooch.vert";
+        fShaderFile = QDir::currentPath() + "/gooch.frag";
+    }
+
     lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
-    objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
+    objectColor = glm::vec3(0.9f, 0.9f, 0.9f);
     lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    shaderType = 1;
+    // gooch alpha
+    gooch_alpha = 0.5;
+
 }
 
 Widget::~Widget()
@@ -26,6 +39,121 @@ void Widget::cleanup()
 
 }
 
+void Widget::ReLoadOBJ()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Open An Obj File"),
+                QString(),
+                tr("OBJ Files(*.obj)")
+                );
+    if(!fileName.isEmpty()){
+        qDebug() << "OBJ file name:" << fileName;
+        QFile file(fileName);
+        if(!file.open(QIODevice::ReadOnly)){
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("could not open this obj file"));
+            return;
+        }
+        else{
+            QTextStream in (&file);
+
+            vector<glm::vec3> vertices_coords;
+            vector<glm::vec3> vertices_normal;
+            vector<glm::vec2> vertices_texcoords;
+            vector<Vertex> vertices;
+
+            int ftest = 0;
+            QString line = in.readLine();
+            while(true)
+            {
+                if(line.isEmpty())
+                {
+                    qDebug() << "space"   ;
+                    line = in.readLine();
+                    continue;
+
+                }
+
+                if(line[0] == '#')
+                {
+                    qDebug() << line;
+                }
+                else if(line.left(2) == "v ")  //顶点坐标
+                {
+                    line.remove(0, 1);  // remove "# "
+                    QStringList vertex_coords = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_coords[0].toFloat();
+                    GLfloat y = vertex_coords[1].toFloat();
+                    GLfloat z = vertex_coords[2].toFloat();
+
+                    //qDebug() << "v " << x << " " << y << " " << z;
+                    vertices_coords.push_back(glm::vec3(x, y, z));
+                }
+                else if(line.left(2) == "vn")
+                {
+                    line.remove(0, 2);  //remove "vn "
+                    QStringList vertex_normal = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_normal[0].toFloat();
+                    GLfloat y = vertex_normal[1].toFloat();
+                    GLfloat z = vertex_normal[2].toFloat();
+
+                    //qDebug() << "vn " << x << " " << y << " " << z;
+                    vertices_normal.push_back(glm::vec3(x, y, z));
+                }
+                else if(line.left(2) == "vt")
+                {
+                    line.remove(0,2);
+                    QStringList vertex_texcoords = line.split(' ',QString::SkipEmptyParts);
+                    GLfloat x = vertex_texcoords[0].toFloat();
+                    GLfloat y = vertex_texcoords[1].toFloat();
+
+                    vertices_texcoords.push_back(glm::vec2(x,y));
+                }
+                else if(line.left(2) == "f ")
+                {
+                    line.remove(0, 1);  // remove "f "
+                    QStringList face_index = line.split(' ',QString::SkipEmptyParts);
+                    int v_testIndex[3];
+                    int n_testIndex[3];
+
+                    for(int i=0; i<3; i++)
+                    {
+                        QString aVert = face_index[i];
+                        QStringList  aVert_index = aVert.split('/');
+                        int v_index = aVert_index[0].toInt();
+                        //int t_index = aVert_index[1].toInt();
+                        int n_index = aVert_index[2].toInt();
+
+                        v_testIndex[i] = v_index;
+                        n_testIndex[i] = n_index;
+
+                        Vertex vert;
+                        vert.Position = vertices_coords[v_index-1];
+                        vert.Normal = vertices_normal[n_index-1];
+                        //vert.TexCoords =
+
+                        vertices.push_back(vert);
+                    }
+
+                    ftest++;
+                }
+                if(in.atEnd())
+                    break;
+
+                line = in.readLine();
+            }
+
+            file.close();
+            mesh.ReloadVertices(vertices);
+
+        }
+    }
+
+    update();
+}
+
 void Widget::LoadOBJ()
 {
     QString fileName = QFileDialog::getOpenFileName(
@@ -35,6 +163,7 @@ void Widget::LoadOBJ()
                 tr("OBJ Files(*.obj)")
                 );
     if(!fileName.isEmpty()){
+        qDebug() << "OBJ file name:" << fileName;
         QFile file(fileName);
         if(!file.open(QIODevice::ReadOnly)){
             QMessageBox::critical(this,
@@ -146,7 +275,10 @@ void Widget::LoadOBJ()
 
         }
     }
+
+    update();
 }
+
 
 static void qNormalizeAngle(int &angle)
 {
@@ -155,94 +287,6 @@ static void qNormalizeAngle(int &angle)
     while(angle > 360 * 16)
         angle -= 360 * 16;
 }
-
-static const GLfloat g_vertex_buffer_data[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-
-static const GLfloat g_vertex_buffer_data_normal[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-};
 
 void Widget::setXRotation(int angle)
 {
@@ -337,21 +381,6 @@ void Widget::initializeGL()
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
     LoadOBJ();
-/*
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data_normal), g_vertex_buffer_data_normal, GL_STATIC_DRAW);
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
-    glEnableVertexAttribArray(0);
-    // normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
-*/
 
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
         std::cerr <<"unable to compile vertx shader\n";
@@ -403,6 +432,7 @@ void Widget::paintGL()
 
     //glBindVertexArray(VAO);
     glBindVertexArray(mesh.VAO);
+    qDebug() << "vao" << mesh.VAO;
 
     if(shaderType == 0)
     {
@@ -454,6 +484,50 @@ void Widget::paintGL()
 
          glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
     }
+    else if(shaderType==2)
+    {
+        GLuint objectColorLoc = glGetUniformLocation(program.programId(), "u_objectColor");
+        GLuint coolColorLoc = glGetUniformLocation(program.programId(), "u_coolColor");
+        GLuint warmColorLoc = glGetUniformLocation(program.programId(), "u_warmColor");
+
+        //GLuint lightColorLoc = glGetUniformLocation(program.programId(), "lightColor");
+        GLuint lightPosLoc = glGetUniformLocation(program.programId(), "u_lightPos");
+        GLuint viewPosLoc = glGetUniformLocation(program.programId(), "u_viewPos");
+
+        GLuint alphaLoc = glGetUniformLocation(program.programId(), "u_alpha");
+        GLuint betaLoc = glGetUniformLocation(program.programId(), "u_beta");
+
+        glUniform3f(objectColorLoc, objectColor.x, objectColor.y, objectColor.z);
+        glUniform3f(coolColorLoc, 0, 0, 1);
+        glUniform3f(warmColorLoc, 1, 0, 0);
+        glUniform1f(alphaLoc, this->gooch_alpha);
+        glUniform1f(betaLoc, 0.5f);
+
+        //glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
+
+        glm::mat4 model;
+        model = glm::rotate(model, glm::radians((GLfloat)xRotAngle), glm::vec3(1, 0, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)yRotAngle), glm::vec3(0, 1, 0));
+        model = glm::rotate(model, glm::radians((GLfloat)zRotAngle), glm::vec3(0, 0, 1));
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+
+        GLuint modelLoc = glGetUniformLocation(program.programId(), "u_model_mat");
+        GLuint viewLoc = glGetUniformLocation(program.programId(), "u_view_mat");
+        GLuint projLoc = glGetUniformLocation(program.programId(), "u_projection_mat");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
+    }
     glBindVertexArray(0);
 
+}
+
+void Widget::setAlpha(float alpha)
+{
+    gooch_alpha = alpha/10.0f;
+    update();
 }

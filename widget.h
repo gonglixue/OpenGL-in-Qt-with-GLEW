@@ -38,7 +38,8 @@ public:
     QString vShaderFile;
     QString fShaderFile;
     Camera camera;
-
+    void cleanup();
+    void ReLoadOBJ();
 
 public slots:
     void setXRotation(int angle);
@@ -47,7 +48,8 @@ public slots:
     void setLightX(GLfloat light_x);
     void setLightY(GLfloat light_y);
     void setLightZ(GLfloat light_z);
-    void cleanup();
+    // temp gooch
+    void setAlpha(float alpha);
 
 signals:
     void xRotationChanged(int angle);
@@ -83,6 +85,9 @@ private:
     glm::vec3 lightPos;
 
     Mesh mesh;
+
+    // gooch
+    GLfloat gooch_alpha;
 };
 
 #endif // WIDGET_H
