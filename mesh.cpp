@@ -81,6 +81,8 @@ void Mesh::setupMeshWithoutElement()
 
 void Mesh::deleteBuffer()
 {
+    qDebug() << "vbo" << VBO;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    qDebug() << "vbo-delete" << VBO;
 }

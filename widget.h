@@ -66,8 +66,14 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent * event) override;
 
-private:
     QOpenGLShaderProgram program;
+    glm::vec3 objectColor;
+    glm::vec3 lightColor;
+    glm::vec3 lightPos;
+    Mesh mesh;
+
+private:
+
 
     int screenWidth;
     int screenHeight;
@@ -81,11 +87,9 @@ private:
     QPoint mouseLastPos;
 
     int shaderType; //0:only color; 1:light;
-    glm::vec3 objectColor;
-    glm::vec3 lightColor;
-    glm::vec3 lightPos;
 
-    Mesh mesh;
+
+
 
     // gooch
     GLfloat gooch_alpha;
