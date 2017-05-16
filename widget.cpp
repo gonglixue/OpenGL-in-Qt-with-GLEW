@@ -432,7 +432,7 @@ void Widget::paintGL()
 
     //glBindVertexArray(VAO);
     glBindVertexArray(mesh.VAO);
-    qDebug() << "vao" << mesh.VAO;
+    //qDebug() << "vao" << mesh.VAO;
 
     if(shaderType == 0)
     {
