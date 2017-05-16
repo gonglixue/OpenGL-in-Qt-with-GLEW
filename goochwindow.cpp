@@ -9,6 +9,9 @@ GoochWindow::GoochWindow():MyWindow()
     betaSlider->setRange(0, 10);
 
     connect(alphaSlider, &QSlider::valueChanged, glWidget, &Widget::setAlpha);
-    alphaSlider->show();
+    connect(betaSlider, &QSlider::valueChanged, glWidget, &Widget::setBeta);
+    //alphaSlider->show();
+    container->addWidget(alphaSlider);
+    container->addWidget(betaSlider);
 }
 

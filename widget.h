@@ -50,6 +50,7 @@ public slots:
     void setLightZ(GLfloat light_z);
     // temp gooch
     void setAlpha(float alpha);
+    void setBeta(float beta);
 
 signals:
     void xRotationChanged(int angle);
@@ -88,6 +89,7 @@ private:
 
     // gooch
     GLfloat gooch_alpha;
+    GLfloat gooch_beta;
 };
 
 #endif // WIDGET_H

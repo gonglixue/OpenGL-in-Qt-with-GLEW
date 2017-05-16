@@ -501,7 +501,7 @@ void Widget::paintGL()
         glUniform3f(coolColorLoc, 0, 0, 1);
         glUniform3f(warmColorLoc, 1, 0, 0);
         glUniform1f(alphaLoc, this->gooch_alpha);
-        glUniform1f(betaLoc, 0.5f);
+        glUniform1f(betaLoc, this->gooch_beta);
 
         //glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
@@ -529,5 +529,11 @@ void Widget::paintGL()
 void Widget::setAlpha(float alpha)
 {
     gooch_alpha = alpha/10.0f;
+    update();
+}
+
+void Widget::setBeta(float beta)
+{
+    gooch_beta = beta/10.0f;
     update();
 }

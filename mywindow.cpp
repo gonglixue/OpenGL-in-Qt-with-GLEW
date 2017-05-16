@@ -1,10 +1,5 @@
 #include "mywindow.h"
-#include <QSlider>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QMessageBox>
-#include <QApplication>
-#include <QDesktopWidget>
+
 
 MyWindow::MyWindow()
 {
@@ -27,7 +22,7 @@ MyWindow::MyWindow()
     connect(glWidget, &Widget::zRotationChanged, zSlider, &QSlider::setValue);
 
     //QVBoxLayout *mainLayout = new QVBoxLayout;
-    QHBoxLayout *container = new QHBoxLayout;
+    this->container = new QHBoxLayout;
     container->addWidget(glWidget);
     container->addWidget(xSlider);
     container->addWidget(ySlider);

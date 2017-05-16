@@ -3,6 +3,12 @@
 
 #include "widget.h"
 #include <QWidget>
+#include <QSlider>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QMessageBox>
+#include <QApplication>
+#include <QDesktopWidget>
 
 class QSlider;
 class QPushButton;
@@ -18,9 +24,9 @@ protected:
     void keyPressEvent(QKeyEvent *event);
     QSlider* createSlider();
     Widget *glWidget;
+    QHBoxLayout *container;
+
 private:
-
-
     QSlider *xSlider;
     QSlider *ySlider;
     QSlider *zSlider;
