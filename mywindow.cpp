@@ -23,7 +23,7 @@ MyWindow::MyWindow()
 
     //QVBoxLayout *mainLayout = new QVBoxLayout;
     this->container = new QHBoxLayout;
-    container->addWidget(glWidget);
+    //container->addWidget(glWidget);
     container->addWidget(xSlider);
     container->addWidget(ySlider);
     container->addWidget(zSlider);

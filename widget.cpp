@@ -7,7 +7,7 @@ Widget::Widget(QWidget *parent)
     screenHeight = 500;
     screenWidth = 500;
     xRotAngle = yRotAngle = zRotAngle = 0;
-    shaderType = 2;
+    shaderType = 1;
 
     if(shaderType == 1)
     {
@@ -24,8 +24,6 @@ Widget::Widget(QWidget *parent)
     objectColor = glm::vec3(0.9f, 0.9f, 0.9f);
     lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    // gooch alpha
-    gooch_alpha = 0.5;
 
 }
 
@@ -358,7 +356,7 @@ void Widget::mouseMoveEvent(QMouseEvent *event)
 
     mouseLastPos = event->pos();
 }
-
+/*
 void Widget::initializeGL()
 {
 
@@ -393,7 +391,8 @@ void Widget::initializeGL()
 
     program.bind();
 
-}
+}*/
+
 
 void Widget::resizeGL(int w, int h)
 {
@@ -409,7 +408,7 @@ QSize Widget::sizeHint() const
 
 void Widget::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << event->key();
+    //qDebug() << event->key();
 
     switch(event->key())
     {
@@ -484,56 +483,7 @@ void Widget::paintGL()
 
          glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
     }
-    else if(shaderType==2)
-    {
-        GLuint objectColorLoc = glGetUniformLocation(program.programId(), "u_objectColor");
-        GLuint coolColorLoc = glGetUniformLocation(program.programId(), "u_coolColor");
-        GLuint warmColorLoc = glGetUniformLocation(program.programId(), "u_warmColor");
 
-        //GLuint lightColorLoc = glGetUniformLocation(program.programId(), "lightColor");
-        GLuint lightPosLoc = glGetUniformLocation(program.programId(), "u_lightPos");
-        GLuint viewPosLoc = glGetUniformLocation(program.programId(), "u_viewPos");
-
-        GLuint alphaLoc = glGetUniformLocation(program.programId(), "u_alpha");
-        GLuint betaLoc = glGetUniformLocation(program.programId(), "u_beta");
-
-        glUniform3f(objectColorLoc, objectColor.x, objectColor.y, objectColor.z);
-        glUniform3f(coolColorLoc, 0, 0, 1);
-        glUniform3f(warmColorLoc, 1, 0, 0);
-        glUniform1f(alphaLoc, this->gooch_alpha);
-        glUniform1f(betaLoc, this->gooch_beta);
-
-        //glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
-        glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
-
-        glm::mat4 model;
-        model = glm::rotate(model, glm::radians((GLfloat)xRotAngle), glm::vec3(1, 0, 0));
-        model = glm::rotate(model, glm::radians((GLfloat)yRotAngle), glm::vec3(0, 1, 0));
-        model = glm::rotate(model, glm::radians((GLfloat)zRotAngle), glm::vec3(0, 0, 1));
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
-
-        GLuint modelLoc = glGetUniformLocation(program.programId(), "u_model_mat");
-        GLuint viewLoc = glGetUniformLocation(program.programId(), "u_view_mat");
-        GLuint projLoc = glGetUniformLocation(program.programId(), "u_projection_mat");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
-    }
     glBindVertexArray(0);
 
-}
-
-void Widget::setAlpha(float alpha)
-{
-    gooch_alpha = alpha/10.0f;
-    update();
-}
-
-void Widget::setBeta(float beta)
-{
-    gooch_beta = beta/10.0f;
-    update();
 }

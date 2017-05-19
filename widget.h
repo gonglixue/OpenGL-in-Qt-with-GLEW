@@ -48,9 +48,6 @@ public slots:
     void setLightX(GLfloat light_x);
     void setLightY(GLfloat light_y);
     void setLightZ(GLfloat light_z);
-    // temp gooch
-    void setAlpha(float alpha);
-    void setBeta(float beta);
 
 signals:
     void xRotationChanged(int angle);
@@ -59,7 +56,7 @@ signals:
 
 
 protected:
-    void initializeGL();
+    //void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
     void keyPressEvent(QKeyEvent *event) override;
@@ -72,28 +69,25 @@ protected:
     glm::vec3 lightPos;
     Mesh mesh;
 
-private:
-
-
-    int screenWidth;
-    int screenHeight;
-
-    GLuint VBO;
-    GLuint VAO;   
-
     int xRotAngle;
     int yRotAngle;
     int zRotAngle;
     QPoint mouseLastPos;
+    int screenWidth;
+    int screenHeight;
+
+private:
+
+
+
+
+    GLuint VBO;
+    GLuint VAO;   
+
+
 
     int shaderType; //0:only color; 1:light;
 
-
-
-
-    // gooch
-    GLfloat gooch_alpha;
-    GLfloat gooch_beta;
 };
 
 #endif // WIDGET_H

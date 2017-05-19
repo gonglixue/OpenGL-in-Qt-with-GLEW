@@ -6,8 +6,10 @@ INPUT(
 ./debug\programmainwindow.o
 ./debug\mesh.o
 ./debug\goochwindow.o
+./debug\goochglwidget.o
 ./debug\moc_widget.o
 ./debug\moc_mywindow.o
 ./debug\moc_programmainwindow.o
 ./debug\moc_goochwindow.o
+./debug\moc_goochglwidget.o
 );

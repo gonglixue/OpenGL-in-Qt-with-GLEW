@@ -2,6 +2,7 @@
 
 GoochGLWidget::GoochGLWidget():Widget()
 {
+    qDebug() << "constructor of GoochGLWidget" ;
     vShaderFile = QDir::currentPath() + "/gooch.vert";
     fShaderFile = QDir::currentPath() + "/gooch.frag";
 
@@ -26,6 +27,7 @@ void GoochGLWidget::setBeta(float beta)
 
 void GoochGLWidget::initializeGL()
 {
+    qDebug() << "GoochGLWidget\n";
     makeCurrent();
     glewExperimental = true;
     GLenum err = glewInit();
@@ -34,7 +36,7 @@ void GoochGLWidget::initializeGL()
         std::cerr << glewGetErrorString(err);
     }
 
-    std::cerr << "using OpenGL" << format().majorVersion() << "." << format.minorVersion() << "\n";
+    //std::cerr << "using OpenGL" << format().majorVersion() << "." << format.minorVersion() << "\n";
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
