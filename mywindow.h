@@ -26,7 +26,6 @@ protected:
     Widget *glWidget;
     QHBoxLayout *container;
 
-private:
     QSlider *xSlider;
     QSlider *ySlider;
     QSlider *zSlider;

@@ -278,7 +278,7 @@ void Widget::LoadOBJ()
 }
 
 
-static void qNormalizeAngle(int &angle)
+void qNormalizeAngle(int &angle)
 {
     while(angle < 0)
         angle += 360 * 16;
@@ -288,8 +288,11 @@ static void qNormalizeAngle(int &angle)
 
 void Widget::setXRotation(int angle)
 {
+
     qNormalizeAngle(angle);
-    if(angle != xRotAngle)
+    //qDebug() << "set x rotation:" << angle;
+    //if(angle != xRotAngle)
+    if(true)
     {
         xRotAngle = angle;
         emit xRotationChanged(angle);

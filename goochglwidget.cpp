@@ -25,6 +25,60 @@ void GoochGLWidget::setBeta(float beta)
     update();
 }
 
+void GoochGLWidget::setXRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    //qDebug() << "set x rotation in child" << angle;
+    if(angle != xRotAngle)
+    {
+        xRotAngle = angle;
+        emit xRotationChanged(angle);
+        update();
+    }
+}
+
+void GoochGLWidget::setYRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    //qDebug() << "set x rotation in child" << angle;
+    if(angle != yRotAngle)
+    {
+        yRotAngle = angle;
+        emit yRotationChanged(angle);
+        update();
+    }
+}
+
+void GoochGLWidget::setZRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    //qDebug() << "set x rotation in child" << angle;
+    if(angle != zRotAngle)
+    {
+        zRotAngle = angle;
+        emit zRotationChanged(angle);
+        update();
+    }
+}
+
+void GoochGLWidget::setLightX(GLfloat light_x)
+{
+    lightPos.x = light_x/10.0;
+    update();
+}
+
+void GoochGLWidget::setLightY(GLfloat light_y)
+{
+    lightPos.y = light_y/10.0;
+    update();
+}
+
+void GoochGLWidget::setLightZ(GLfloat light_z)
+{
+    lightPos.z = light_z/10.0;
+    update();
+}
+
 void GoochGLWidget::initializeGL()
 {
     qDebug() << "GoochGLWidget\n";
@@ -65,6 +119,7 @@ void GoochGLWidget::paintGL()
     GLuint objectColorLoc = glGetUniformLocation(program.programId(), "u_objectColor");
     GLuint coolColorLoc = glGetUniformLocation(program.programId(), "u_coolColor");
     GLuint warmColorLoc = glGetUniformLocation(program.programId(), "u_warmColor");
+    GLuint lightColorLoc = glGetUniformLocation(program.programId(), "u_lightColor");
 
     //GLuint lightColorLoc = glGetUniformLocation(program.programId(), "lightColor");
     GLuint lightPosLoc = glGetUniformLocation(program.programId(), "u_lightPos");
@@ -78,6 +133,7 @@ void GoochGLWidget::paintGL()
     glUniform3f(warmColorLoc, warmColor.r, warmColor.g, warmColor.b);
     glUniform1f(alphaLoc, this->gooch_alpha);
     glUniform1f(betaLoc, this->gooch_beta);
+    glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
 
     //glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
     glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
