@@ -7,6 +7,8 @@ INPUT(
 ./debug\mesh.o
 ./debug\goochwindow.o
 ./debug\goochglwidget.o
+./debug\glwidget.o
+./debug\qmesh.o
 ./debug\moc_widget.o
 ./debug\moc_mywindow.o
 ./debug\moc_programmainwindow.o

@@ -7,6 +7,8 @@ INPUT(
 ./release\mesh.o
 ./release\goochwindow.o
 ./release\goochglwidget.o
+./release\glwidget.o
+./release\qmesh.o
 ./release\moc_widget.o
 ./release\moc_mywindow.o
 ./release\moc_programmainwindow.o
