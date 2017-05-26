@@ -1,3 +1,4 @@
 *.exe
 debug/
 release/
+qt5glew.pro.user
