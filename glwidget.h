@@ -6,11 +6,72 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
+#include <QWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLShaderProgram>
+#include <QKeyEvent>
+#include <QPoint>
+#include <QDir>
+#include <QFileDialog>
+#include <QFile>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QString>
+#include <QStringList>
+#include <QVector3D>
+#include <iostream>
 
-class GLWidget
+#include "mesh.h"
+using namespace std;
+
+void qNormalizeAngle(int &angle);
+
+class GLWidget:public QOpenGLWidget
 {
+        Q_OBJECT
 public:
-    GLWidget();
+    GLWidget(QWidget *parent = 0);
+    ~Widget();
+    void loadOBJ();
+    QSize sizeHint() const;
+    QString vShaderFile;
+    QString fShaderFile;
+    void cleanup();
+
+public slots:
+    void setXRotation(int angle);
+    void setYRotation(int angle);
+    void setZRotation(int angle);
+    void setLightX(GLfloat light_x);
+    void setLightY(GLfloat light_y);
+    void setLightZ(GLfloat light_z);
+
+signals:
+    void xRotationChanged(int angle);
+    void yRotationChanged(int angle);
+    void zRotationChanged(int angle);
+
+protected:
+    void resizeGL(int w, int h);
+    void paintGL();
+    void keyPressEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+
+    QOpenGLShaderProgram program;
+    QVector3D objectColor;
+    QVector3D lightColor;
+    QVector3D lightPos;
+
+    Mesh mesh;
+
+    int xRotAngle;
+    int yRotAngle;
+    int zRotAngle;
+    QPoint mouseLastPos;
+
+    int screenWidth;
+    int screenHeight;
 };
 
 #endif // GLWIDGET_H
