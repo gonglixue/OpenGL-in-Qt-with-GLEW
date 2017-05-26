@@ -32,7 +32,7 @@ class GLWidget:public QOpenGLWidget
         Q_OBJECT
 public:
     GLWidget(QWidget *parent = 0);
-    ~Widget();
+    ~GLWidget();
     void loadOBJ();
     QSize sizeHint() const;
     QString vShaderFile;
