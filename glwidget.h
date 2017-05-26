@@ -19,9 +19,10 @@
 #include <QString>
 #include <QStringList>
 #include <QVector3D>
+#include <QVector2D>
 #include <iostream>
 
-#include "mesh.h"
+#include "qmesh.h"
 #include "qcamera.h"
 using namespace std;
 
@@ -55,7 +56,7 @@ signals:
 
 protected:
     void resizeGL(int w, int h);
-    void paintGL();
+    //void paintGL();
     void keyPressEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -65,7 +66,7 @@ protected:
     QVector3D lightColor;
     QVector3D lightPos;
 
-    Mesh mesh;
+    QMesh mesh;
 
     int xRotAngle;
     int yRotAngle;
@@ -74,6 +75,8 @@ protected:
 
     int screenWidth;
     int screenHeight;
+
+    QMatrix4x4 projection;
 };
 
 #endif // GLWIDGET_H
