@@ -8,9 +8,8 @@ Mesh::Mesh()
 Mesh::Mesh(vector<Vertex> vertices_in, vector<GLuint> indices_in)
 {
     this->vertices = vertices_in;
-    //this->indices = indices_in;
+    this->indices = indices_in;
 
-    this->EBO = 0;
 
     this->setupMesh();
 }
@@ -50,8 +49,8 @@ void Mesh::setupMesh()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
     // Texture coords
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+    //glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
 
     glBindVertexArray(0); // unbind vao
 
