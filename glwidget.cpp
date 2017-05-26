@@ -4,9 +4,9 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent),
     xRotAngle(0),
     yRotAngle(0),
     zRotAngle(0),
-    program(0),
-    camera(QVector3D(0, 0, 3.0f))
+    program(0)
 {
+    camera = QCamera(QVector3D(0, 0, 3.0f));
     screenHeight = 500;
     screenWidth = 500;
 
@@ -26,7 +26,8 @@ GLWidget::~GLWidget()
 void GLWidget::cleanup()
 {
     makeCurrent();
-    mesh.VBO.destroy();
+    //mesh.VBO.destroy();
+    mesh.deleteBuffer();
     delete this->program;
     this->program = 0;
     doneCurrent();
@@ -133,7 +134,7 @@ void GLWidget::loadOBJ()
 
 void GLWidget::setXRotation(int angle)
 {
-    qNormalizeAngle(angle);
+    qNormalizeAngle2(angle);
     if(angle != this->xRotAngle)
     {
         this->xRotAngle = angle;
@@ -143,7 +144,7 @@ void GLWidget::setXRotation(int angle)
 }
 void GLWidget::setYRotation(int angle)
 {
-    qNormalizeAngle(angle);
+    qNormalizeAngle2(angle);
     if(angle != this->yRotAngle)
     {
         this->yRotAngle = angle;
@@ -153,7 +154,7 @@ void GLWidget::setYRotation(int angle)
 }
 void GLWidget::setZRotation(int angle)
 {
-    qNormalizeAngle(angle);
+    qNormalizeAngle2(angle);
     if(angle != zRotAngle)
     {
         zRotAngle = angle;
@@ -205,7 +206,7 @@ void GLWidget::resizeGL(int w, int h)
     screenWidth = w;
     glViewport(0, 0, w, h);
     projection.setToIdentity();
-    projection.perspective(camera.Zoom, Glfloat(w)/h, 0.01f, 100.0f);
+    projection.perspective(camera.Zoom, GLfloat(w)/h, 0.01f, 100.0f);
 }
 
 QSize GLWidget::sizeHint() const
@@ -226,7 +227,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     update();
 }
 
-void qNormalizeAngle(int &angle){
+void qNormalizeAngle2(int &angle){
     while(angle < 0)
         angle += 360 * 16;
     while(angle > 360*16)

@@ -32,8 +32,13 @@ void QCamera::updateCameraVectors()
     front.setX( qCos(qDegreesToRadians(this->Yaw)) );
     front.setZ( qSin(qDegreesToRadians(this->Yaw)) * qCos(qDegreesToRadians(this->Pitch)) );
     front.setY( qSin(qDegreesToRadians(this->Pitch)) );
+    front.normalize();
+    this->Front = front;
 
-    this->Front = front.normalize();
-    this->Right = (QVector3D::crossProduct(this->Front, this->WorldUp)).normalize();
-    this->Up = (QVector3D::crossProduct(this->Right, this->Front)).normalize();
+    QVector3D temp1 = QVector3D::crossProduct(this->Front, this->WorldUp);
+    temp1.normalize();
+    this->Right = temp1;
+    temp1 = QVector3D::crossProduct(this->Right, this->Front);
+    temp1.normalize();
+    this->Up = temp1;
 }

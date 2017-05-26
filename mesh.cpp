@@ -5,11 +5,11 @@ Mesh::Mesh()
 
 }
 
-Mesh::Mesh(vector<Vertex> vertices_in, vector<GLuint> indices_in)
+Mesh::Mesh(vector<Vertex> &vertices_in, vector<GLuint> &indices_in)
 {
     this->vertices = vertices_in;
     this->indices = indices_in;
-
+    qDebug() << "indices size:" << indices.size();
 
     this->setupMesh();
 }
@@ -41,7 +41,7 @@ void Mesh::setupMesh()
     glBufferData(GL_ARRAY_BUFFER, this->vertices.size()*sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size()*sizeof(GLuint), &this->indices[0], GL_STATIC_DRAW);
-
+    qDebug() << "in setup function indices size:" << this->indices.size();
     // POSITION
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);

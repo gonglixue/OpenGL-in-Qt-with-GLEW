@@ -96,7 +96,7 @@ void GoochGLWidget::initializeGL()
     glDisable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    LoadOBJ();
+    LoadOBJ2();
 
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
         std::cerr <<"unable to compile vertx shader\n";
@@ -152,7 +152,8 @@ void GoochGLWidget::paintGL()
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
+    //glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
+    glDrawElements(GL_TRIANGLES, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
 }

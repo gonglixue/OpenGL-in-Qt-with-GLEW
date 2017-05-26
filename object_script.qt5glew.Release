@@ -9,9 +9,11 @@ INPUT(
 ./release\goochglwidget.o
 ./release\glwidget.o
 ./release\qmesh.o
+./release\qcamera.o
 ./release\moc_widget.o
 ./release\moc_mywindow.o
 ./release\moc_programmainwindow.o
 ./release\moc_goochwindow.o
 ./release\moc_goochglwidget.o
+./release\moc_glwidget.o
 );

@@ -353,7 +353,7 @@ void Widget::LoadOBJ2()
 
                     //qDebug() << "vn " << x << " " << y << " " << z;
                     //vertices_normal.push_back(glm::vec3(x, y, z));
-                    vertices[vnCount].normal = glm::vec3(x,y,z);
+                    vertices[vnCount].Normal = glm::vec3(x,y,z);
                     vnCount++;
                 }
                 else if(line.left(2) == "vt")
@@ -377,9 +377,9 @@ void Widget::LoadOBJ2()
                     {
                         QString aVert = face_index[i];
                         QStringList  aVert_index = aVert.split('/');
-                        int v_index = aVert_index[0].toInt();
+                        GLuint v_index = aVert_index[0].toInt() - 1;
                         //int t_index = aVert_index[1].toInt();
-                        int n_index = aVert_index[2].toInt();
+                        GLuint n_index = aVert_index[2].toInt() - 1;
 
                         if(v_index != n_index){
                             qDebug() << "v_index != n_index";
@@ -388,14 +388,14 @@ void Widget::LoadOBJ2()
                             indices.push_back(n_index);
                         }
 
-                        //v_testIndex[i] = v_index;
+                        v_testIndex[i] = v_index;
                         //n_testIndex[i] = n_index;
                     }
 
 //                    qDebug() << v_testIndex[0] <<"/"<<n_testIndex[0] << " "
 //                                              << v_testIndex[1] << "/" << n_testIndex[1] << " "
 //                                              << v_testIndex[2] << "/" << n_testIndex[2];
-
+                    //qDebug() << "indices:" << v_testIndex[0] <<"/" << v_testIndex[1] << "/" << v_testIndex[2];
                     ftest++;
                 }
                 if(in.atEnd())
@@ -408,9 +408,9 @@ void Widget::LoadOBJ2()
 //                    break;
 //                }
             }
-
+            qDebug() << "count " << vCount << "," << vnCount;
             file.close();
-            mesh = Mesh(vertices);
+            mesh = Mesh(vertices, indices);
 
         }
     }

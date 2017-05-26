@@ -28,7 +28,7 @@ public:
     vector <Texture> textures;
     vector <GLuint> indices;
 
-    Mesh(vector<Vertex> vertices_in, vector<GLuint>indices);
+    Mesh(vector<Vertex> &vertices_in, vector<GLuint> &indices_in);
     Mesh(vector<Vertex> vertices_in);
     GLuint VAO, VBO, EBO;
 

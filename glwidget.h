@@ -26,7 +26,7 @@
 #include "qcamera.h"
 using namespace std;
 
-void qNormalizeAngle(int &angle);
+void qNormalizeAngle2(int &angle);
 
 class GLWidget:public QOpenGLWidget
 {
@@ -61,7 +61,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
 
-    QOpenGLShaderProgram program;
+    QOpenGLShaderProgram* program;
     QVector3D objectColor;
     QVector3D lightColor;
     QVector3D lightPos;
