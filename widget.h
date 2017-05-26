@@ -36,6 +36,7 @@ public:
     Widget(QWidget *parent = 0);
     ~Widget();
     void LoadOBJ();
+    void LoadOBJ2();
     QSize sizeHint() const;
     QString vShaderFile;
     QString fShaderFile;

@@ -130,6 +130,7 @@ void GLWidget::loadOBJ()
     update();
 }
 
+
 void GLWidget::setXRotation(int angle)
 {
     qNormalizeAngle(angle);

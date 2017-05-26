@@ -177,6 +177,7 @@ void Widget::LoadOBJ()
             vector<glm::vec2> vertices_texcoords;
             vector<Vertex> vertices;
 
+
             int ftest = 0;
             QString line = in.readLine();
             while(true)
@@ -240,6 +241,10 @@ void Widget::LoadOBJ()
                         //int t_index = aVert_index[1].toInt();
                         int n_index = aVert_index[2].toInt();
 
+                        if(v_index != n_index){
+                            qDebug() << "v_index != n_index";
+                        }
+
                         v_testIndex[i] = v_index;
                         n_testIndex[i] = n_index;
 
@@ -277,6 +282,141 @@ void Widget::LoadOBJ()
     update();
 }
 
+void Widget::LoadOBJ2()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Open An Obj File"),
+                QString(),
+                tr("OBJ Files(*.obj)")
+                );
+    if(!fileName.isEmpty()){
+        qDebug() << "OBJ file name:" << fileName;
+        QFile file(fileName);
+        if(!file.open(QIODevice::ReadOnly)){
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("could not open this obj file"));
+            return;
+        }
+        else{
+            QTextStream in (&file);
+
+            vector<glm::vec3> vertices_coords;
+            vector<glm::vec3> vertices_normal;
+            vector<glm::vec2> vertices_texcoords;
+            vector<Vertex> vertices;
+
+            vector<GLuint> indices;
+            int vCount=0;
+            int vnCount=0;
+
+            int ftest = 0;
+            QString line = in.readLine();
+            while(true)
+            {
+                if(line.isEmpty())
+                {
+                    qDebug() << "space"   ;
+                    line = in.readLine();
+                    continue;
+
+                }
+
+                if(line[0] == '#')
+                {
+                    qDebug() << line;
+                }
+                else if(line.left(2) == "v ")  //顶点坐标
+                {
+                    line.remove(0, 1);  // remove "# "
+                    QStringList vertex_coords = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_coords[0].toFloat();
+                    GLfloat y = vertex_coords[1].toFloat();
+                    GLfloat z = vertex_coords[2].toFloat();
+
+                    //qDebug() << "v " << x << " " << y << " " << z;
+                    //vertices_coords.push_back(glm::vec3(x, y, z));
+
+                    Vertex vert;
+                    vert.Position = glm::vec3(x,y,z);
+                    vertices.push_back(vert);
+                    vCount++;
+                }
+                else if(line.left(2) == "vn")
+                {
+                    line.remove(0, 2);  //remove "vn "
+                    QStringList vertex_normal = line.split(' ', QString::SkipEmptyParts);
+                    GLfloat x = vertex_normal[0].toFloat();
+                    GLfloat y = vertex_normal[1].toFloat();
+                    GLfloat z = vertex_normal[2].toFloat();
+
+                    //qDebug() << "vn " << x << " " << y << " " << z;
+                    //vertices_normal.push_back(glm::vec3(x, y, z));
+                    vertices[vnCount].normal = glm::vec3(x,y,z);
+                    vnCount++;
+                }
+                else if(line.left(2) == "vt")
+                {
+                    line.remove(0,2);
+                    QStringList vertex_texcoords = line.split(' ',QString::SkipEmptyParts);
+                    GLfloat x = vertex_texcoords[0].toFloat();
+                    GLfloat y = vertex_texcoords[1].toFloat();
+
+                    //qDebug() << "vt " << x << " " << y;
+                    vertices_texcoords.push_back(glm::vec2(x,y));
+                }
+                else if(line.left(2) == "f ")
+                {
+                    line.remove(0, 1);  // remove "f "
+                    QStringList face_index = line.split(' ',QString::SkipEmptyParts);
+                    int v_testIndex[3];
+                    int n_testIndex[3];
+
+                    for(int i=0; i<3; i++)
+                    {
+                        QString aVert = face_index[i];
+                        QStringList  aVert_index = aVert.split('/');
+                        int v_index = aVert_index[0].toInt();
+                        //int t_index = aVert_index[1].toInt();
+                        int n_index = aVert_index[2].toInt();
+
+                        if(v_index != n_index){
+                            qDebug() << "v_index != n_index";
+                        }
+                        else{
+                            indices.push_back(n_index);
+                        }
+
+                        //v_testIndex[i] = v_index;
+                        //n_testIndex[i] = n_index;
+                    }
+
+//                    qDebug() << v_testIndex[0] <<"/"<<n_testIndex[0] << " "
+//                                              << v_testIndex[1] << "/" << n_testIndex[1] << " "
+//                                              << v_testIndex[2] << "/" << n_testIndex[2];
+
+                    ftest++;
+                }
+                if(in.atEnd())
+                    break;
+
+                line = in.readLine();
+//                if(line==NULL)
+//                {
+//                    qDebug() << "null";
+//                    break;
+//                }
+            }
+
+            file.close();
+            mesh = Mesh(vertices);
+
+        }
+    }
+
+    update();
+}
 
 void qNormalizeAngle(int &angle)
 {
