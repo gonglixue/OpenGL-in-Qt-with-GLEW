@@ -35,6 +35,7 @@ public:
     GLWidget(QWidget *parent = 0);
     ~GLWidget();
     void loadOBJ();
+    void loadOBJ2();  // load indices
     QSize sizeHint() const;
     QString vShaderFile;
     QString fShaderFile;

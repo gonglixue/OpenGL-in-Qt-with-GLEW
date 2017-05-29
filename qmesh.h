@@ -27,8 +27,8 @@ struct Texture{
 class QMesh
 {
 public:
-    QMesh(vector<Vertex> vertices_in, vector<GLuint>indices);
-    QMesh(vector<Vertex> vertices_in);
+    QMesh(vector<Vertex> &vertices_in, vector<GLuint> &indices);
+    QMesh(vector<Vertex> &vertices_in);
     QMesh();
     vector<Vertex> vertices;
     vector<Texture> textures;

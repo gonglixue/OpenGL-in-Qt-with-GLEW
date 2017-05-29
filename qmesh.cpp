@@ -5,7 +5,7 @@ QMesh::QMesh()
 
 }
 
-QMesh::QMesh(vector<Vertex> vertices_in)
+QMesh::QMesh(vector<Vertex> &vertices_in)
 {
 
 
@@ -16,12 +16,13 @@ QMesh::QMesh(vector<Vertex> vertices_in)
 
 }
 
-QMesh::QMesh(vector<Vertex> vertices_in, vector<GLuint> indices_in)
+QMesh::QMesh(vector<Vertex> &vertices_in, vector<GLuint> &indices_in)
 {
 
     this->vertices = vertices_in;
     this->indices = indices_in;
     qDebug() << "v_n" << vertices.size();
+    qDebug() << "i_n" << indices.size();
     //this->VBO = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     //this->EBO = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 

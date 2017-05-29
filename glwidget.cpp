@@ -218,9 +218,11 @@ void GLWidget::loadOBJ2()
                             qDebug() << "v_index != n_index";
                         }
                         else{
+                            //qDebug() << n_index << "/";
                             indices.push_back(n_index);
                         }
                     }
+                    //qDebug() << "\n";
                 }
 
                 if(in.atEnd())
@@ -229,7 +231,7 @@ void GLWidget::loadOBJ2()
             }
             qDebug() << "load obj count "<<vCount << "," << vnCount;
             file.close();
-            mesh = Mesh(vertices, indices);
+            mesh = QMesh(vertices, indices);
         }
 
     }

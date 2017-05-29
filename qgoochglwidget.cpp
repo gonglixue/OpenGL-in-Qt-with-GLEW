@@ -1,6 +1,8 @@
 #include "qgoochglwidget.h"
 
-QGoochGLWidget::QGoochGLWidget() : GLWidget()
+QGoochGLWidget::QGoochGLWidget() : GLWidget(),
+    VBO(QOpenGLBuffer::VertexBuffer),
+    EBO(QOpenGLBuffer::IndexBuffer)
 {
     vShaderFile = QDir::currentPath() + "/gooch.vert";
     fShaderFile = QDir::currentPath() + "/gooch.frag";
@@ -10,6 +12,9 @@ QGoochGLWidget::QGoochGLWidget() : GLWidget()
 
     coolColor = QVector3D(0, 0, 1);
     warmColor = QVector3D(1, 0, 0);
+
+    //VBO = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    //EBO = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 }
 
 void QGoochGLWidget::setAlpha(float alpha)
@@ -91,7 +96,8 @@ void QGoochGLWidget::initializeGL()
     glDisable(GL_CULL_FACE);
     glClearColor(0,0,0.4f,1);
 
-    this->loadOBJ();
+    //this->loadOBJ();
+    this->loadOBJ2();
     setupVertexAttribs();
 
     this->program = new QOpenGLShaderProgram;
@@ -115,7 +121,7 @@ void QGoochGLWidget::setupVertexAttribs()
     this->VBO.create();
     this->EBO.create();
 
-    VAO.bind();
+    //VAO.bind();
     VBO.bind();
     VBO.allocate(&this->mesh.vertices[0], this->mesh.vertices.size()*sizeof(Vertex));
     EBO.bind();
@@ -133,14 +139,17 @@ void QGoochGLWidget::setupVertexAttribs()
     //f->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, TexCoords)));
 
     //this->VBO.release();  // unbind
-    this->VAO.release();
+    //this->VAO.release();
 }
 
 void QGoochGLWidget::paintGL()
 {
+    qDebug() << "paintGL";
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    QOpenGLVertexArrayObject::Binder vaoBinder(&this->VAO);
     this->program->bind();
-    this->VAO.bind();
+    //this->VAO.bind();
     GLuint objectColorLoc = program->uniformLocation("u_objectColor");
     GLuint coolColorLoc = program->uniformLocation("u_coolColor");
     GLuint warmColorLoc = program->uniformLocation("u_warmColor");
@@ -171,5 +180,7 @@ void QGoochGLWidget::paintGL()
     program->setUniformValue(viewLoc, this->camera.GetViewMatrix());
     program->setUniformValue(projLoc, this->projection);
 
+    //glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
     glDrawElements(GL_TRIANGLES, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
+    program->release();
 }
