@@ -2,7 +2,7 @@
 #define QMESH_H
 
 #include <vector>
-//#include <qopengl.h>
+#include <qopengl.h>
 #include <QVector3D>
 #include <QVector2D>
 #include <QString>

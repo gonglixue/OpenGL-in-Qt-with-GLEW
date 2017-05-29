@@ -10,10 +10,12 @@ INPUT(
 ./debug\glwidget.o
 ./debug\qmesh.o
 ./debug\qcamera.o
+./debug\qgoochglwidget.o
 ./debug\moc_widget.o
 ./debug\moc_mywindow.o
 ./debug\moc_programmainwindow.o
 ./debug\moc_goochwindow.o
 ./debug\moc_goochglwidget.o
 ./debug\moc_glwidget.o
+./debug\moc_qgoochglwidget.o
 );

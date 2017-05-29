@@ -28,7 +28,7 @@ using namespace std;
 
 void qNormalizeAngle2(int &angle);
 
-class GLWidget:public QOpenGLWidget
+class GLWidget:public QOpenGLWidget, protected QOpenGLFunctions
 {
         Q_OBJECT
 public:

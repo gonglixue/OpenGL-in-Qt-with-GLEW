@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     goochglwidget.cpp \
     glwidget.cpp \
     qmesh.cpp \
-    qcamera.cpp
+    qcamera.cpp \
+    qgoochglwidget.cpp
 
 HEADERS  += widget.h \
     camera.h \
@@ -33,7 +34,8 @@ HEADERS  += widget.h \
     goochglwidget.h \
     glwidget.h \
     qmesh.h \
-    qcamera.h
+    qcamera.h \
+    qgoochglwidget.h
 
 //macx: LIBS += -L$$PWD/../../Homebrew/Cellar/glew/1.12.0/lib/ -lGLEW.1.12.0
 //LIBS += "F:/library/glew-2.0.0/glew-2.0.0/build/cmake/mingw_build/lib/libglew32.a"
