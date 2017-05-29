@@ -7,6 +7,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include "goochwindow.h"
+
 class ProgramMainWindow : public QMainWindow
 {
     Q_OBJECT

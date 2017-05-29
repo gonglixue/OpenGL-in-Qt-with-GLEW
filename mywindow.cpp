@@ -3,7 +3,8 @@
 
 MyWindow::MyWindow()
 {
-    glWidget = new Widget;
+    //glWidget = new Widget;
+    glWidget = new GLWidget;
 
     xSlider = createSlider();
     ySlider = createSlider();
@@ -12,14 +13,18 @@ MyWindow::MyWindow()
     lightXSlider->setRange(-30, 30);
 
 
-    connect(xSlider, &QSlider::valueChanged, glWidget, &Widget::setXRotation);
-    connect(ySlider, &QSlider::valueChanged, glWidget, &Widget::setYRotation);
-    connect(zSlider, &QSlider::valueChanged, glWidget, &Widget::setZRotation);
-    connect(lightXSlider, &QSlider::valueChanged, glWidget, &Widget::setLightX);
+//    connect(xSlider, &QSlider::valueChanged, glWidget, &Widget::setXRotation);
+//    connect(ySlider, &QSlider::valueChanged, glWidget, &Widget::setYRotation);
+//    connect(zSlider, &QSlider::valueChanged, glWidget, &Widget::setZRotation);
+//    connect(lightXSlider, &QSlider::valueChanged, glWidget, &Widget::setLightX);
+    connect(xSlider, &QSlider::valueChanged, glWidget, &GLWidget::setXRotation);
+    connect(ySlider, &QSlider::valueChanged, glWidget, &GLWidget::setYRotation);
+    connect(zSlider, &QSlider::valueChanged, glWidget, &GLWidget::setZRotation);
+    connect(lightXSlider, &QSlider::valueChanged, glWidget, &GLWidget::setLightX);
 
-    connect(glWidget, &Widget::xRotationChanged, xSlider, &QSlider::setValue);
-    connect(glWidget, &Widget::yRotationChanged, ySlider, &QSlider::setValue);
-    connect(glWidget, &Widget::zRotationChanged, zSlider, &QSlider::setValue);
+    connect(glWidget, &GLWidget::xRotationChanged, xSlider, &QSlider::setValue);
+    connect(glWidget, &GLWidget::yRotationChanged, ySlider, &QSlider::setValue);
+    connect(glWidget, &GLWidget::yRotationChanged, zSlider, &QSlider::setValue);
 
     //QVBoxLayout *mainLayout = new QVBoxLayout;
     this->container = new QHBoxLayout;
@@ -68,5 +73,5 @@ void MyWindow::keyPressEvent(QKeyEvent *event)
 
 void MyWindow::LoadOBJ()
 {
-    glWidget->ReLoadOBJ();
+    //glWidget->ReLoadOBJ();
 }

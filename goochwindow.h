@@ -1,7 +1,8 @@
 #ifndef GOOCHWINDOW_H
 #define GOOCHWINDOW_H
 #include "mywindow.h"
-#include "goochglwidget.h"
+//#include "goochglwidget.h"
+#include "qgoochglwidget.h"
 
 class GoochWindow:public MyWindow
 {
@@ -12,7 +13,7 @@ private:
     QSlider *alphaSlider;
     QSlider *betaSlider;
 
-    GoochGLWidget* ThisGoochWidget;
+    QGoochGLWidget* ThisGoochWidget;
 
 };
 

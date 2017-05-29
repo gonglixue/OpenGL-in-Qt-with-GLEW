@@ -83,6 +83,7 @@ void QGoochGLWidget::setLightZ(GLfloat light_z)
 void QGoochGLWidget::initializeGL()
 {
     //connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, )
+    qDebug() << "QGooghGLWidget Initialize";
     makeCurrent();
     initializeOpenGLFunctions();
 

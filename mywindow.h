@@ -1,7 +1,8 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
-#include "widget.h"
+//#include "widget.h"
+#include "glwidget.h"
 #include <QWidget>
 #include <QSlider>
 #include <QVBoxLayout>
@@ -23,7 +24,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
     QSlider* createSlider();
-    Widget *glWidget;
+    GLWidget *glWidget;
     QHBoxLayout *container;
 
     QSlider *xSlider;
