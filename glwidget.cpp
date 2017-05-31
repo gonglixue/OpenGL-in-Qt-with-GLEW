@@ -6,7 +6,7 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent),
     zRotAngle(0),
     program(0)
 {
-    camera = QCamera(QVector3D(0, 0, 3.0f));
+    camera = QCamera(QVector3D(0, 1.5f, 6.0f));
     screenHeight = 500;
     screenWidth = 500;
 

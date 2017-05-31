@@ -9,8 +9,13 @@ MyWindow::MyWindow()
     xSlider = createSlider();
     ySlider = createSlider();
     zSlider = createSlider();
-    lightXSlider = new QSlider(Qt::Vertical);
+    lightXSlider = new QSlider(Qt::Horizontal);
     lightXSlider->setRange(-30, 30);
+
+    rotxLabel = createLabel("X Rotation");
+    rotyLabel = createLabel("Y Rotation");
+    rotzLabel = createLabel("Z Rotation");
+    lightPosLabel = createLabel("Light Position");
 
 
 //    connect(xSlider, &QSlider::valueChanged, glWidget, &Widget::setXRotation);
@@ -27,14 +32,19 @@ MyWindow::MyWindow()
     connect(glWidget, &GLWidget::yRotationChanged, zSlider, &QSlider::setValue);
 
     //QVBoxLayout *mainLayout = new QVBoxLayout;
-    this->container = new QHBoxLayout;
-    //container->addWidget(glWidget);
-    container->addWidget(xSlider);
-    container->addWidget(ySlider);
-    container->addWidget(zSlider);
-    container->addWidget(lightXSlider);
+    //this->container = new QHBoxLayout;
+    ctrContainer = new QVBoxLayout;
+    mainContainer = new QHBoxLayout;
+    ctrContainer->addWidget(rotxLabel);
+    ctrContainer->addWidget(xSlider);
+    ctrContainer->addWidget(rotyLabel);
+    ctrContainer->addWidget(ySlider);
+    ctrContainer->addWidget(rotzLabel);
+    ctrContainer->addWidget(zSlider);
+    ctrContainer->addWidget(lightPosLabel);
+    ctrContainer->addWidget(lightXSlider);
 
-    setLayout(container);
+    //setLayout(container);
 
     xSlider->setValue(15 * 16);
     ySlider->setValue(345 * 16);
@@ -46,16 +56,23 @@ MyWindow::MyWindow()
 
 QSlider *MyWindow::createSlider()
 {
-    QSlider *slider = new QSlider(Qt::Vertical);
+    QSlider *slider = new QSlider(Qt::Horizontal);
     slider->setRange(0, 360*16);
     slider->setSingleStep(16);
     slider->setPageStep(15*16);
-    slider->setTickInterval(15*16);
-    slider->setTickPosition(QSlider::TicksRight);
+    //slider->setTickInterval(15*16);
+    //slider->setTickPosition(QSlider::TicksRight);
 
     return slider;
 }
 
+QLabel *MyWindow::createLabel(QString labelText)
+{
+    QLabel *label = new QLabel();
+    label->setText(labelText);
+
+    return label;
+}
 
 void MyWindow::keyPressEvent(QKeyEvent *event)
 {

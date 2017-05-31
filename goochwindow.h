@@ -12,6 +12,8 @@ public:
 private:
     QSlider *alphaSlider;
     QSlider *betaSlider;
+    QLabel *alphaLabel;
+    QLabel * betaLabel;
 
     QGoochGLWidget* ThisGoochWidget;
 
