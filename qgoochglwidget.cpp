@@ -102,10 +102,13 @@ void QGoochGLWidget::initializeGL()
 
     this->program = new QOpenGLShaderProgram;
     if(!program->addShaderFromSourceFile(QOpenGLShader::Vertex, vShaderFile))
-        std::cerr <<"unable to compile vertx shader\n";
+    {
+        std::cerr <<"unable to compile vertx shader: " ;
+        std::cerr << vShaderFile.toStdString() << std::endl;
+    }
 
     if (!program->addShaderFromSourceFile(QOpenGLShader::Fragment, fShaderFile))
-        std::cerr <<"unable to compile fragmet shader\n";
+        std::cerr <<"unable to compile fragmet shader: " << fShaderFile.toStdString() << endl;
 
     if (!program->link())
         std::cerr <<"unable to link shader program\n";
@@ -144,11 +147,12 @@ void QGoochGLWidget::setupVertexAttribs()
 
 void QGoochGLWidget::paintGL()
 {
-    //qDebug() << "paintGL";
+    qDebug() << "paintGL";
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     QOpenGLVertexArrayObject::Binder vaoBinder(&this->VAO);
     this->program->bind();
+    qDebug() << "program bind ok";
     //this->VAO.bind();
     GLuint objectColorLoc = program->uniformLocation("u_objectColor");
     GLuint coolColorLoc = program->uniformLocation("u_coolColor");
@@ -179,8 +183,10 @@ void QGoochGLWidget::paintGL()
     program->setUniformValue(modelLoc, model);
     program->setUniformValue(viewLoc, this->camera.GetViewMatrix());
     program->setUniformValue(projLoc, this->projection);
-
+    qDebug() << "set uniform ok";
     //glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
     glDrawElements(GL_TRIANGLES, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
+    qDebug() << "draw ok";
     program->release();
+    qDebug() << "release ok";
 }

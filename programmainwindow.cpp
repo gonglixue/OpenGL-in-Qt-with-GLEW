@@ -4,7 +4,8 @@ ProgramMainWindow::ProgramMainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QMenuBar *menuBar = new QMenuBar;
 
-    QMenu *menuLoad = menuBar->addMenu(tr("&Load"));
+    QMenu *menuLoad = new QMenu;
+    menuLoad = menuBar->addMenu(tr("&Load"));
     QAction *actionVShader = new QAction(menuLoad);
     actionVShader->setText(tr("vShader"));
     menuLoad->addAction(actionVShader);

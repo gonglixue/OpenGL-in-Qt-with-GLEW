@@ -3,8 +3,8 @@
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent),
     xRotAngle(0),
     yRotAngle(0),
-    zRotAngle(0),
-    program(0)
+    zRotAngle(0)
+    //program(0)
 {
     camera = QCamera(QVector3D(0, 1.5f, 6.0f));
     screenHeight = 500;
@@ -16,6 +16,8 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent),
     lightPos = QVector3D(1.2f, 1.0f, 2.0f);
     objectColor = QVector3D(0.9f, 0.9f, 0.9f);
     lightColor = QVector3D(1.0f, 1.0f, 1.0f);
+
+    program = new QOpenGLShaderProgram;
 }
 
 GLWidget::~GLWidget()
