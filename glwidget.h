@@ -59,8 +59,8 @@ protected:
     void resizeGL(int w, int h);
     //void paintGL();
     void keyPressEvent(QKeyEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent* event);
 
     QOpenGLShaderProgram* program;
     QVector3D objectColor;

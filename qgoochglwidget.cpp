@@ -6,15 +6,18 @@ QGoochGLWidget::QGoochGLWidget() : GLWidget(),
 {
     vShaderFile = QDir::currentPath() + "/gooch.vert";
     fShaderFile = QDir::currentPath() + "/gooch.frag";
-
+    qDebug() << "shader path:" << vShaderFile;
     gooch_alpha = 0.5;
     gooch_beta = 0.5;
 
     coolColor = QVector3D(0, 0, 1);
     warmColor = QVector3D(1, 0, 0);
+    edgeColor = QVector3D(0, 1, 0);
 
-    //VBO = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    //EBO = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    silhVShaderFile = QDir::currentPath() + "/silh.vert";
+    silhFShaderFile = QDir::currentPath() + "/silh.frag";
+    silhGShaderFile = QDir::currentPath() + "/silh.geom";
+
 }
 
 void QGoochGLWidget::setAlpha(float alpha)
@@ -85,6 +88,20 @@ void QGoochGLWidget::setLightZ(GLfloat light_z)
     update();
 }
 
+void QGoochGLWidget::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case 87: camera.ProcessKeyboard(FORWARD, 0.01); break;
+    case 83: camera.ProcessKeyboard(BACKWARD, 0.01); break;
+    case 65: camera.ProcessKeyboard(LEFT, 0.01); break;
+    case 68: camera.ProcessKeyboard(RIGHT, 0.01); break;
+    }
+    qDebug() << event->key() << "pressed";
+
+    update();
+}
+
 void QGoochGLWidget::initializeGL()
 {
     //connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, )
@@ -93,6 +110,7 @@ void QGoochGLWidget::initializeGL()
     initializeOpenGLFunctions();
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_ALPHA_TEST);
     glDisable(GL_CULL_FACE);
     glClearColor(0,0,0.4f,1);
 
@@ -112,6 +130,25 @@ void QGoochGLWidget::initializeGL()
 
     if (!program->link())
         std::cerr <<"unable to link shader program\n";
+
+    this->silhProgram = new QOpenGLShaderProgram;
+    if(!silhProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, silhVShaderFile))
+    {
+        std::cerr << "unable to compile vertex shader: ";
+        std::cerr << silhVShaderFile.toStdString() << std::endl;
+    }
+    if(!silhProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, silhGShaderFile))
+    {
+        std::cerr << "unable to compile geometry shader: ";
+        std::cerr << silhGShaderFile.toStdString() << std::endl;
+    }
+    if(!silhProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, silhFShaderFile))
+    {
+        std::cerr << "unable to compile fragment shader: ";
+        std::cerr << silhFShaderFile.toStdString() << std::endl;
+    }
+    if(!silhProgram->link())
+        std::cerr << "unable to link silhouette shaders.\n";
 
     program->bind();
 
@@ -147,12 +184,18 @@ void QGoochGLWidget::setupVertexAttribs()
 
 void QGoochGLWidget::paintGL()
 {
-    qDebug() << "paintGL";
+    //qDebug() << "paintGL";
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     QOpenGLVertexArrayObject::Binder vaoBinder(&this->VAO);
+    QMatrix4x4 model;
+    model.setToIdentity();
+    model.rotate(xRotAngle, QVector3D(1, 0, 0));
+    model.rotate(yRotAngle, QVector3D(0, 1, 0));
+    model.rotate(zRotAngle, QVector3D(0, 0, 1));
+
     this->program->bind();
-    qDebug() << "program bind ok";
+    //qDebug() << "program bind ok";
     //this->VAO.bind();
     GLuint objectColorLoc = program->uniformLocation("u_objectColor");
     GLuint coolColorLoc = program->uniformLocation("u_coolColor");
@@ -175,18 +218,34 @@ void QGoochGLWidget::paintGL()
     program->setUniformValue(lightPosLoc, this->lightPos);
     program->setUniformValue(viewPosLoc, this->camera.Position );
 
-    QMatrix4x4 model;
-    model.setToIdentity();
-    model.rotate(xRotAngle, QVector3D(1, 0, 0));
-    model.rotate(yRotAngle, QVector3D(0, 1, 0));
-    model.rotate(zRotAngle, QVector3D(0, 0, 1));
+
     program->setUniformValue(modelLoc, model);
     program->setUniformValue(viewLoc, this->camera.GetViewMatrix());
     program->setUniformValue(projLoc, this->projection);
-    qDebug() << "set uniform ok";
+    //qDebug() << "set uniform ok";
     //glDrawArrays(GL_TRIANGLES, 0, this->mesh.vertices.size());
-    glDrawElements(GL_TRIANGLES, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
-    qDebug() << "draw ok";
+    //glDrawElements(GL_TRIANGLES, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
+    //qDebug() << "draw ok";
     program->release();
-    qDebug() << "release ok";
+    //qDebug() << "release ok";
+
+    // 2nd pass: silhouettes
+    this->silhProgram->bind();
+    objectColorLoc = silhProgram->uniformLocation("u_objectColor");
+    modelLoc = silhProgram->uniformLocation("u_model_mat") ;
+    viewLoc = silhProgram->uniformLocation("u_view_mat");
+    projLoc = silhProgram->uniformLocation("u_projection_mat");
+    glLineWidth(2.0f);
+    silhProgram->setUniformValue(objectColorLoc, this->edgeColor);
+    silhProgram->setUniformValue(modelLoc, model);
+    silhProgram->setUniformValue(viewLoc, this->camera.GetViewMatrix());
+    silhProgram->setUniformValue(projLoc, this->projection);
+    //geom test
+    GLuint model_geo = silhProgram->uniformLocation("u_model_geo");
+    GLuint view_geo = silhProgram->uniformLocation("u_view_geo");
+    silhProgram->setUniformValue(model_geo, model);
+    silhProgram->setUniformValue(view_geo, this->camera.GetViewMatrix());
+
+    glDrawElements(GL_TRIANGLES_ADJACENCY, this->mesh.indices.size(), GL_UNSIGNED_INT, 0);
+    silhProgram->release();
 }

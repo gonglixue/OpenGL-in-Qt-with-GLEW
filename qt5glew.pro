@@ -57,6 +57,9 @@ DISTFILES += \
     basiclambert.frag \
     gooch.vert \
     temp \
-    gooch.frag
+    gooch.frag \
+    silh.vert \
+    silh.frag \
+    silh.geom
 
 CONFIG+=  debug

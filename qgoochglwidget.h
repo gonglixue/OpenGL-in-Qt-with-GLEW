@@ -22,6 +22,7 @@ public slots:
 protected:
     void initializeGL();
     void paintGL();
+    void keyPressEvent(QKeyEvent* event) override;
 
 private:
     GLfloat gooch_alpha;
@@ -32,6 +33,12 @@ private:
     QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer VBO;
     QOpenGLBuffer EBO;
+
+    QOpenGLShaderProgram* silhProgram;
+    QString silhVShaderFile;
+    QString silhFShaderFile;
+    QString silhGShaderFile;
+    QVector3D edgeColor;
 
     void setupVertexAttribs();
 };
